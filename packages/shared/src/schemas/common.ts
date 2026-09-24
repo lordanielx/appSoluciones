@@ -26,7 +26,8 @@ export const emailSchema = z
   .max(160);
 
 export const optionalEmail = z
-  .union([emailSchema, z.literal(''), z.null(), z.undefined()])
+  .union([emailSchema, z.literal('')])
+  .nullish()
   .transform((v) => (v ? v : null));
 
 export const phoneSchema = optionalText(40).refine((v) => v === null || /^[0-9+()\-\s.]{7,40}$/.test(v), {

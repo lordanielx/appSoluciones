@@ -1,0 +1,493 @@
+// Modelo de datos de Mecaelectric Operaciones.
+// Convenciones: ids UUID internos, números legibles (OT-/INF-) visibles,
+// timestamps en UTC, sin hard delete en OT, informes, evidencias, firmas y auditoría.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  COORDINATOR
+  TECHNICIAN
+}
+
+enum WorkOrderStatus {
+  DRAFT
+  ASSIGNED
+  ACCEPTED
+  REJECTED
+  IN_PROGRESS
+  PENDING_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  CLOSED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ResponseType {
+  BOOLEAN
+  TEXT
+  LONG_TEXT
+  NUMBER
+  SELECT
+  MULTISELECT
+  STATUS
+}
+
+enum SignatureType {
+  TECHNICIAN
+  CLIENT
+}
+
+enum ReportStatus {
+  APPROVED
+  SUPERSEDED
+}
+
+enum SyncStatus {
+  PENDING
+  SYNCING
+  SYNCED
+  ERROR
+}
+
+model User {
+  id               String    @id @default(uuid()) @db.Uuid
+  email            String    @unique
+  fullName         String
+  passwordHash     String
+  role             Role
+  phone            String?
+  jobTitle         String?
+  active           Boolean   @default(true)
+  failedLoginCount Int       @default(0)
+  lockedUntil      DateTime?
+  lastLoginAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  sessions            Session[]
+  passwordResets      PasswordResetToken[]
+  assignedWorkOrders  WorkOrder[]              @relation("AssignedTechnician")
+  createdWorkOrders   WorkOrder[]              @relation("CreatedBy")
+  waivedSignatures    WorkOrder[]              @relation("SignatureWaivedBy")
+  statusChanges       WorkOrderStatusHistory[]
+  answeredResponses   ChecklistResponse[]
+  evidence            Evidence[]               @relation("EvidenceCreatedBy")
+  deletedEvidence     Evidence[]               @relation("EvidenceDeletedBy")
+  signatures          Signature[]
+  generatedReports    Report[]                 @relation("ReportGeneratedBy")
+  approvedReports     Report[]                 @relation("ReportApprovedBy")
+  auditLogs           AuditLog[]
+  processedOperations ProcessedOperation[]
+
+  @@index([role, active])
+}
+
+/// Refresh tokens rotativos. `familyId` agrupa la cadena de rotación para detectar reutilización.
+model Session {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @db.Uuid
+  tokenHash    String    @unique
+  familyId     String    @db.Uuid
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?   @db.Uuid
+  ip           String?
+  userAgent    String?
+  createdAt    DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([familyId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Client {
+  id          String   @id @default(uuid()) @db.Uuid
+  legalName   String
+  tradeName   String?
+  nit         String   @unique
+  dv          String?
+  contactName String?
+  phone       String?
+  email       String?
+  address     String?
+  city        String?
+  department  String?
+  notes       String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  equipment  Equipment[]
+  workOrders WorkOrder[]
+
+  @@index([legalName])
+}
+
+model Equipment {
+  id             String   @id @default(uuid()) @db.Uuid
+  clientId       String   @db.Uuid
+  code           String
+  name           String
+  category       String?
+  brand          String?
+  model          String?
+  serial         String?
+  location       String?
+  description    String?
+  specifications String?
+  notes          String?
+  photoKey       String?
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  client     Client      @relation(fields: [clientId], references: [id])
+  workOrders WorkOrder[]
+
+  @@unique([clientId, code])
+  @@index([clientId])
+  @@index([serial])
+}
+
+/// Identidad documental (marca del PDF). No es multi-tenancy.
+model BrandProfile {
+  id             String   @id @default(uuid()) @db.Uuid
+  name           String
+  legalName      String
+  nit            String
+  logoKey        String?
+  address        String?
+  phone          String?
+  email          String?
+  website        String?
+  primaryColor   String
+  secondaryColor String
+  footerText     String?
+  isDefault      Boolean  @default(false)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  workOrders WorkOrder[]
+  reports    Report[]
+}
+
+model ServiceType {
+  id                String   @id @default(uuid()) @db.Uuid
+  code              String   @unique
+  name              String
+  description       String?
+  requiresEquipment Boolean  @default(true)
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  checklistTemplates ChecklistTemplate[]
+  workOrders         WorkOrder[]
+}
+
+model ChecklistTemplate {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  serviceTypeId String?  @db.Uuid
+  description   String?
+  version       Int      @default(1)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  serviceType ServiceType?            @relation(fields: [serviceTypeId], references: [id])
+  items       ChecklistTemplateItem[]
+  workOrders  WorkOrder[]
+  executions  ChecklistExecution[]
+}
+
+model ChecklistTemplateItem {
+  id                  String       @id @default(uuid()) @db.Uuid
+  checklistTemplateId String       @db.Uuid
+  order               Int
+  section             String?
+  label               String
+  description         String?
+  responseType        ResponseType
+  required            Boolean      @default(true)
+  evidenceRequired    Boolean      @default(false)
+  minPhotos           Int          @default(0)
+  observationRequired Boolean      @default(false)
+  options             String[]     @default([])
+  unit                String?
+  minValue            Float?
+  maxValue            Float?
+  /// Los ítems retirados de la plantilla se archivan (las OT existentes ya tienen su copia).
+  archivedAt          DateTime?
+
+  template ChecklistTemplate @relation(fields: [checklistTemplateId], references: [id])
+
+  @@index([checklistTemplateId, order])
+}
+
+model WorkOrder {
+  id                         String          @id @default(uuid()) @db.Uuid
+  number                     String          @unique
+  clientId                   String          @db.Uuid
+  equipmentId                String?         @db.Uuid
+  representedCompanyId       String          @db.Uuid
+  checklistTemplateId        String          @db.Uuid
+  serviceTypeId              String          @db.Uuid
+  title                      String
+  description                String?
+  serviceScope               String?
+  priority                   Priority        @default(MEDIUM)
+  scheduledStart             DateTime?
+  scheduledEnd               DateTime?
+  assignedTechnicianId       String?         @db.Uuid
+  address                    String?
+  contactName                String?
+  contactPhone               String?
+  status                     WorkOrderStatus @default(DRAFT)
+  internalNotes              String?
+  technicianNotes            String?
+  rejectionReason            String?
+  changesRequestedComment    String?
+  cancellationReason         String?
+  clientSignatureWaived      Boolean         @default(false)
+  clientSignatureWaiverReason String?
+  clientSignatureWaivedById  String?         @db.Uuid
+  /// Concurrencia optimista sobre los datos de la orden.
+  version                    Int             @default(1)
+  createdById                String          @db.Uuid
+  createdAt                  DateTime        @default(now())
+  updatedAt                  DateTime        @updatedAt
+  assignedAt                 DateTime?
+  acceptedAt                 DateTime?
+  startedAt                  DateTime?
+  submittedAt                DateTime?
+  approvedAt                 DateTime?
+  closedAt                   DateTime?
+  cancelledAt                DateTime?
+
+  client                 Client                   @relation(fields: [clientId], references: [id])
+  equipment              Equipment?               @relation(fields: [equipmentId], references: [id])
+  representedCompany     BrandProfile             @relation(fields: [representedCompanyId], references: [id])
+  checklistTemplate      ChecklistTemplate        @relation(fields: [checklistTemplateId], references: [id])
+  serviceType            ServiceType              @relation(fields: [serviceTypeId], references: [id])
+  assignedTechnician     User?                    @relation("AssignedTechnician", fields: [assignedTechnicianId], references: [id])
+  createdBy              User                     @relation("CreatedBy", fields: [createdById], references: [id])
+  clientSignatureWaivedBy User?                   @relation("SignatureWaivedBy", fields: [clientSignatureWaivedById], references: [id])
+  statusHistory          WorkOrderStatusHistory[]
+  checklistExecution     ChecklistExecution?
+  evidence               Evidence[]
+  signatures             Signature[]
+  reports                Report[]
+
+  @@index([status])
+  @@index([assignedTechnicianId])
+  @@index([clientId])
+  @@index([equipmentId])
+  @@index([scheduledStart])
+  @@index([createdAt])
+}
+
+model WorkOrderStatusHistory {
+  id          String           @id @default(uuid()) @db.Uuid
+  workOrderId String           @db.Uuid
+  fromStatus  WorkOrderStatus?
+  toStatus    WorkOrderStatus
+  comment     String?
+  actorId     String           @db.Uuid
+  createdAt   DateTime         @default(now())
+
+  workOrder WorkOrder @relation(fields: [workOrderId], references: [id])
+  actor     User      @relation(fields: [actorId], references: [id])
+
+  @@index([workOrderId, createdAt])
+}
+
+/// Copia (snapshot) del checklist aplicada a una OT.
+model ChecklistExecution {
+  id              String   @id @default(uuid()) @db.Uuid
+  workOrderId     String   @unique @db.Uuid
+  templateId      String   @db.Uuid
+  templateVersion Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  workOrder WorkOrder           @relation(fields: [workOrderId], references: [id])
+  template  ChecklistTemplate   @relation(fields: [templateId], references: [id])
+  responses ChecklistResponse[]
+}
+
+model ChecklistResponse {
+  id                  String       @id @default(uuid()) @db.Uuid
+  executionId         String       @db.Uuid
+  templateItemId      String?      @db.Uuid
+  order               Int
+  section             String?
+  label               String
+  description         String?
+  responseType        ResponseType
+  required            Boolean
+  evidenceRequired    Boolean
+  minPhotos           Int
+  observationRequired Boolean
+  options             String[]     @default([])
+  unit                String?
+  minValue            Float?
+  maxValue            Float?
+  value               Json?
+  observation         String?
+  version             Int          @default(1)
+  answeredAt          DateTime?
+  answeredById        String?      @db.Uuid
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  execution  ChecklistExecution @relation(fields: [executionId], references: [id])
+  answeredBy User?              @relation(fields: [answeredById], references: [id])
+  evidence   Evidence[]
+
+  @@index([executionId, order])
+}
+
+model Evidence {
+  id                  String     @id @db.Uuid
+  workOrderId         String     @db.Uuid
+  checklistResponseId String?    @db.Uuid
+  fileKey             String
+  thumbnailKey        String
+  mimeType            String
+  sizeBytes           Int
+  width               Int?
+  height              Int?
+  caption             String?
+  capturedAt          DateTime?
+  uploadedAt          DateTime   @default(now())
+  createdById         String     @db.Uuid
+  syncStatus          SyncStatus @default(SYNCED)
+  deletedAt           DateTime?
+  deletedById         String?    @db.Uuid
+
+  workOrder         WorkOrder          @relation(fields: [workOrderId], references: [id])
+  checklistResponse ChecklistResponse? @relation(fields: [checklistResponseId], references: [id])
+  createdBy         User               @relation("EvidenceCreatedBy", fields: [createdById], references: [id])
+  deletedBy         User?              @relation("EvidenceDeletedBy", fields: [deletedById], references: [id])
+
+  @@index([workOrderId])
+  @@index([checklistResponseId])
+}
+
+model Signature {
+  id              String        @id @db.Uuid
+  workOrderId     String        @db.Uuid
+  signatureType   SignatureType
+  signerName      String
+  signerRole      String?
+  svgKey          String
+  pngKey          String
+  signedAt        DateTime
+  consentAccepted Boolean       @default(false)
+  consentText     String?
+  createdById     String        @db.Uuid
+  createdAt       DateTime      @default(now())
+  /// Una firma nueva del mismo tipo reemplaza la anterior sin borrarla.
+  supersededAt    DateTime?
+
+  workOrder WorkOrder @relation(fields: [workOrderId], references: [id])
+  createdBy User      @relation(fields: [createdById], references: [id])
+
+  @@index([workOrderId, signatureType])
+}
+
+model Report {
+  id             String       @id @default(uuid()) @db.Uuid
+  workOrderId    String       @db.Uuid
+  reportNumber   String
+  version        Int
+  status         ReportStatus
+  pdfKey         String
+  sizeBytes      Int
+  sha256         String
+  brandProfileId String       @db.Uuid
+  generatedById  String       @db.Uuid
+  generatedAt    DateTime     @default(now())
+  approvedById   String?      @db.Uuid
+  approvedAt     DateTime?
+
+  workOrder    WorkOrder    @relation(fields: [workOrderId], references: [id])
+  brandProfile BrandProfile @relation(fields: [brandProfileId], references: [id])
+  generatedBy  User         @relation("ReportGeneratedBy", fields: [generatedById], references: [id])
+  approvedBy   User?        @relation("ReportApprovedBy", fields: [approvedById], references: [id])
+
+  @@unique([workOrderId, version])
+  @@index([reportNumber])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  actorId     String?  @db.Uuid
+  action      String
+  entityType  String
+  entityId    String
+  workOrderId String?  @db.Uuid
+  metadata    Json     @default("{}")
+  ip          String?
+  userAgent   String?
+  requestId   String?
+  createdAt   DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([entityId])
+  @@index([workOrderId, createdAt])
+  @@index([createdAt])
+  @@index([actorId])
+}
+
+/// Consecutivos legibles por año (OT-2026, INF-2026).
+model Counter {
+  key   String @id
+  value Int
+}
+
+/// Registro de idempotencia de operaciones enviadas por clientes (offline outbox).
+model ProcessedOperation {
+  clientOperationId String   @id @db.Uuid
+  userId            String   @db.Uuid
+  type              String
+  statusCode        Int
+  response          Json
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+}

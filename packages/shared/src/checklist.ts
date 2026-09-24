@@ -79,7 +79,10 @@ export function validateValueShape(item: ChecklistItemRules, value: ChecklistVal
   }
 }
 
-export function isOutOfRange(item: ChecklistItemRules, value: ChecklistValue): boolean {
+export function isOutOfRange(
+  item: Pick<ChecklistItemRules, 'responseType' | 'minValue' | 'maxValue'>,
+  value: ChecklistValue,
+): boolean {
   if (item.responseType !== ResponseType.NUMBER || typeof value !== 'number') return false;
   if (item.minValue !== null && item.minValue !== undefined && value < item.minValue) return true;
   if (item.maxValue !== null && item.maxValue !== undefined && value > item.maxValue) return true;
