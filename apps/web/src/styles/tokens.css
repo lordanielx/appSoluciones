@@ -1,0 +1,38 @@
+/*
+ * Tokens de diseño centralizados. Formato "R G B" para permitir opacidad en Tailwind.
+ * Paleta industrial: navy/graphite dominan; naranja de seguridad solo para CTA y estados activos.
+ */
+:root {
+  --color-primary: 11 31 51;          /* #0B1F33 navy industrial */
+  --color-primary-hover: 20 46 72;    /* #142E48 */
+  --color-graphite: 37 42 48;         /* #252A30 */
+  --color-steel: 93 104 115;          /* #5D6873 */
+  --color-accent: 232 93 4;           /* #E85D04 safety orange */
+  --color-accent-hover: 204 80 2;     /* #CC5002 */
+  --color-electric: 23 105 170;       /* #1769AA */
+  --color-background: 244 246 247;    /* #F4F6F7 */
+  --color-surface: 255 255 255;
+  --color-subtle: 237 240 242;        /* #EDF0F2 */
+  --color-border: 213 218 222;        /* #D5DADE light steel */
+  --color-border-strong: 176 184 191; /* #B0B8BF */
+  --color-text: 23 33 43;             /* #17212B */
+  --color-text-muted: 91 102 112;     /* #5B6670 */
+  --color-text-inverse: 255 255 255;
+  --color-success: 40 122 75;         /* #287A4B */
+  --color-success-soft: 232 243 236;
+  --color-warning: 183 121 31;        /* #B7791F */
+  --color-warning-soft: 250 242 225;
+  --color-danger: 180 35 24;          /* #B42318 */
+  --color-danger-soft: 251 234 232;
+  --color-info-soft: 231 240 248;
+
+  --radius-sm: 3px;
+  --radius-md: 5px;
+  --radius-lg: 6px;
+
+  --control-h: 40px;
+  --control-h-touch: 48px;
+  --sidebar-w: 232px;
+  --bottom-nav-h: 60px;
+  --focus-ring: 0 0 0 2px rgb(var(--color-surface)), 0 0 0 4px rgb(var(--color-electric));
+}

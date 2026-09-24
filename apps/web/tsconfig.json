@@ -1,0 +1,9 @@
+{
+  "extends": "@meca/tsconfig/react.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] },
+    "types": ["vite/client", "vite-plugin-pwa/react", "vite-plugin-pwa/info"]
+  },
+  "include": ["src", "vite.config.ts", "tailwind.config.ts"]
+}
