@@ -1,0 +1,11 @@
+{
+  "extends": "@meca/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2023", "DOM"],
+    "noEmit": true
+  },
+  "include": ["src", "test"]
+}

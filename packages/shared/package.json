@@ -1,0 +1,36 @@
+{
+  "name": "@meca/shared",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dominio compartido: enums, máquina de estados, reglas de negocio y esquemas Zod",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "type": "module",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src test",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@meca/eslint-config": "workspace:*",
+    "@meca/tsconfig": "workspace:*",
+    "eslint": "^9.39.0",
+    "tsup": "^8.5.0",
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
