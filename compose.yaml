@@ -1,0 +1,3 @@
+# Permite ejecutar `docker compose ...` desde la raíz del repositorio.
+include:
+  - infra/docker-compose.yml

@@ -11,7 +11,7 @@ export function App() {
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <AuthProvider>
-          <BrowserRouter>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <AppRoutes />
             <UpdatePrompt />
           </BrowserRouter>

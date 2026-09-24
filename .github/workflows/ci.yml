@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: install · lint · typecheck · test · build
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: meca
+          POSTGRES_PASSWORD: meca
+          POSTGRES_DB: mecaelectric_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U meca" --health-interval 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql://meca:meca@localhost:5432/mecaelectric_test?schema=public
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @meca/shared build
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - name: Instalar Chromium para generación de PDF en pruebas de integración
+        run: npx playwright install --with-deps chromium
+        env: { PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0' }
+      - run: pnpm test
+      - run: pnpm build
+
+  e2e:
+    name: e2e (Playwright)
+    needs: verify
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: meca
+          POSTGRES_PASSWORD: meca
+          POSTGRES_DB: mecaelectric_e2e
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U meca" --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @meca/shared build
+      - run: npx playwright install --with-deps chromium
+      - run: pnpm test:e2e
+        env: { CI: 'true' }
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: playwright-report, path: playwright-report, retention-days: 7 }

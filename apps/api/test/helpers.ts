@@ -30,7 +30,7 @@ export async function createTestApp(): Promise<TestContext> {
 let seq = 0;
 export const unique = (prefix: string) => `${prefix}${Date.now().toString(36)}${(seq++).toString(36)}`;
 
-export async function createUser(prisma: PrismaClient, role: Role, name = role) {
+export async function createUser(prisma: PrismaClient, role: Role, name: string = role) {
   const email = `${unique(role.toLowerCase())}@test.local`;
   const user = await prisma.user.create({
     data: {
