@@ -15,7 +15,7 @@
     "db:deploy": "dotenv -e ../../.env -- prisma migrate deploy",
     "db:seed": "dotenv -e ../../.env -- prisma db seed",
     "db:reset": "dotenv -e ../../.env -- prisma migrate reset --force",
-    "openapi": "ts-node -T scripts/export-openapi.ts",
+    "openapi": "node -r @swc-node/register scripts/export-openapi.ts",
     "db:studio": "dotenv -e ../../.env -- prisma studio"
   },
   "prisma": {

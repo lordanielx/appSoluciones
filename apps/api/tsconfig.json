@@ -4,7 +4,6 @@
     "outDir": "./dist",
     "rootDir": "./",
     "baseUrl": "./",
-    "incremental": true,
     "types": ["node", "jest"]
   },
   "include": ["src", "test", "prisma", "scripts"]
