@@ -149,7 +149,7 @@ function EditUserModal({ user, onClose, isSelf }: { user: UserDto | null; onClos
       open={Boolean(user)}
       onOpenChange={(o) => !o && onClose()}
       title="Editar usuario"
-      description={user ? <span className="font-mono">{user.email}</span> : undefined}
+      description={user ? <span className="">{user.email}</span> : undefined}
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
@@ -236,7 +236,7 @@ export function UsersPage() {
             {u.fullName}
             {u.id === me?.id && <span className="ml-1.5 text-xs font-normal text-text-muted">(usted)</span>}
           </p>
-          <p className="truncate font-mono text-xs text-text-muted">{u.email}</p>
+          <p className="truncate text-xs text-text-muted">{u.email}</p>
         </div>
       ),
     },
@@ -294,7 +294,7 @@ export function UsersPage() {
                     {u.fullName}
                     {u.id === me?.id && <span className="ml-1.5 text-xs font-normal text-text-muted">(usted)</span>}
                   </p>
-                  <p className="truncate font-mono text-xs text-text-muted">{u.email}</p>
+                  <p className="truncate text-xs text-text-muted">{u.email}</p>
                   <p className="text-xs text-text-muted">
                     {ROLE_LABELS[u.role]}
                     {u.jobTitle ? ` · ${u.jobTitle}` : ''}

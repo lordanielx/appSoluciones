@@ -114,7 +114,7 @@ export function EquipmentFormPage() {
                 </FormField>
               )}
               <FormField label="Código interno" required error={err.code?.message} hint="Se guarda en mayúsculas. Ej.: TAB-001">
-                <Input className="font-mono uppercase" autoFocus={!editing && Boolean(presetClientId)} {...register('code')} />
+                <Input className="uppercase" autoFocus={!editing && Boolean(presetClientId)} {...register('code')} />
               </FormField>
               <FormField label="Nombre del equipo" required error={err.name?.message}>
                 <Input {...register('name')} placeholder="Ej.: Tablero general de baja tensión" />
@@ -136,7 +136,7 @@ export function EquipmentFormPage() {
                 <Input {...register('model')} />
               </FormField>
               <FormField label="Serial" error={err.serial?.message}>
-                <Input className="font-mono" {...register('serial')} />
+                <Input className="" {...register('serial')} />
               </FormField>
               <FormField label="Descripción" error={err.description?.message} className="md:col-span-3">
                 <Textarea rows={3} {...register('description')} />
@@ -147,7 +147,7 @@ export function EquipmentFormPage() {
                 hint="Tensión, corriente, potencia, capacidad u otros datos de placa."
                 className="md:col-span-3"
               >
-                <Textarea rows={5} className="font-mono text-sm" {...register('specifications')} />
+                <Textarea rows={5} className="text-sm" {...register('specifications')} />
               </FormField>
             </div>
           </Panel>

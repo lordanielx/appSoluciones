@@ -11,9 +11,9 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
           <p className="label-caps !text-white/50">Plataforma interna</p>
           <p className="mt-3 max-w-xs text-xl font-medium leading-snug">Órdenes de trabajo, checklist, evidencias y firmas en un solo registro trazable.</p>
           <dl className="mt-8 grid grid-cols-3 border-t border-white/15 pt-4 text-xs text-white/60">
-            <div><dt>Módulo</dt><dd className="mt-1 font-mono text-white">OT</dd></div>
-            <div><dt>Informe</dt><dd className="mt-1 font-mono text-white">PDF</dd></div>
-            <div><dt>Campo</dt><dd className="mt-1 font-mono text-white">Offline</dd></div>
+            <div><dt>Módulo</dt><dd className="mt-1 text-white">OT</dd></div>
+            <div><dt>Informe</dt><dd className="mt-1 text-white">PDF</dd></div>
+            <div><dt>Campo</dt><dd className="mt-1 text-white">Offline</dd></div>
           </dl>
         </div>
         {/* Retícula técnica tenue: referencia a plano de ingeniería, no decoración ilustrativa. */}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Camera, CheckSquare, ChevronRight, FileSignature, MapPin, Phone, Send } from 'lucide-react';
+import { Camera, Check, CheckSquare, ChevronRight, FileSignature, MapPin, Phone, Send } from 'lucide-react';
 import { WorkOrderStatus } from '@meca/shared';
 import { acceptWorkOrder, rejectWorkOrder, startWorkOrder } from '@/lib/offline/actions';
 import { fmtDateTime } from '@/lib/format';
@@ -85,7 +85,7 @@ export function WorkOrderPage() {
                   <li key={s.to} className="border-b border-border last:border-b-0">
                     <Link to={s.to} className="flex min-h-[60px] items-center gap-3 px-4 py-2 hover:bg-subtle">
                       <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center border text-sm font-semibold', s.done ? 'border-success bg-success-soft text-success' : 'border-border-strong text-text-muted')}>
-                        {s.done ? '✓' : String(i + 1).padStart(2, '0')}
+                        {s.done ? <Check className="h-4 w-4" strokeWidth={3} aria-label="Completo" /> : String(i + 1).padStart(2, '0')}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block font-medium">{s.label}</span>

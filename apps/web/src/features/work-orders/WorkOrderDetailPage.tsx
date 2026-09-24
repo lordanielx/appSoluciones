@@ -51,7 +51,7 @@ export function WorkOrderDetailPage() {
   return (
     <>
       <PageHeader
-        title={<span className="font-mono">{wo.number}</span>}
+        title={<span className="">{wo.number}</span>}
         subtitle={wo.title}
         breadcrumb={[{ label: 'Órdenes', to: '/work-orders' }, { label: wo.number }]}
         meta={

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Check, X } from 'lucide-react';
 import { SubmissionIssueCode, WorkOrderStatus } from '@meca/shared';
 import { isEditable, saveTechnicianNotes, submitWorkOrder } from '@/lib/offline/actions';
 import { useDocumentTitle, useOnline } from '@/lib/hooks';
@@ -72,7 +73,7 @@ export function SummaryPage() {
               {checks.map((c) => (
                 <li key={c.label} className="flex items-center gap-3 text-md">
                   <span className={cn('flex h-6 w-6 items-center justify-center border text-sm font-bold', c.ok ? 'border-success bg-success-soft text-success' : 'border-danger bg-danger-soft text-danger')} aria-hidden>
-                    {c.ok ? '✓' : '✕'}
+                    {c.ok ? <Check className="h-4 w-4" strokeWidth={3} /> : <X className="h-4 w-4" strokeWidth={3} />}
                   </span>
                   {c.label}
                   <span className="sr-only">{c.ok ? ': completo' : ': pendiente'}</span>

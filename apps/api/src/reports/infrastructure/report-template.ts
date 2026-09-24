@@ -131,7 +131,7 @@ ${embeddedFontCss()}
 :root { --primary: ${b.primaryColor}; --secondary: ${b.secondaryColor}; --text: #17212B; --muted: #5B6670; --line: #D5DADE; --soft: #F4F6F7; }
 * { box-sizing: border-box; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-body { margin: 0; font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif; color: var(--text); font-size: 9.5pt; line-height: 1.4; }
+body { margin: 0; font-family: 'IBM Plex Sans', sans-serif; font-variant-numeric: tabular-nums; color: var(--text); font-size: 9.5pt; line-height: 1.4; }
 .muted { color: var(--muted); }
 header.doc { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; padding-bottom: 10px; border-bottom: 2px solid var(--primary); }
 .brand { display: flex; gap: 14px; align-items: center; }
@@ -289,9 +289,11 @@ ${
 
 /** Encabezado/pie de Chromium: estilos en línea obligatorios, sin recursos externos. */
 export function renderHeaderFooter(d: ReportData) {
-  const style = "font-family:'IBM Plex Sans',Arial,sans-serif;font-size:7pt;color:#5B6670;width:100%;padding:0 14mm;display:flex;justify-content:space-between;";
-  const headerTemplate = `<div style="${style}"><span>${esc(d.brand.name)}</span><span>${esc(d.reportNumber)} · ${esc(d.workOrder.number)}</span></div>`;
-  const footerTemplate = `<div style="${style}border-top:0.5pt solid #D5DADE;padding-top:4px;">
+  const style = "font-family:'IBM Plex Sans',sans-serif;font-variant-numeric:tabular-nums;font-size:7pt;color:#5B6670;width:100%;padding:0 14mm;display:flex;justify-content:space-between;";
+  // Encabezado y pie de Chromium no heredan las fuentes del documento: se embebe IBM Plex Sans.
+  const font = `<style>${embeddedFontCss([400])}</style>`;
+  const headerTemplate = `${font}<div style="${style}"><span>${esc(d.brand.name)}</span><span>${esc(d.reportNumber)} · ${esc(d.workOrder.number)}</span></div>`;
+  const footerTemplate = `${font}<div style="${style}border-top:0.5pt solid #D5DADE;padding-top:4px;">
     <span>${esc(d.brand.footerText ?? d.brand.legalName)}</span>
     <span>Informe ${esc(d.reportNumber)} · Versión ${d.version} · Generado ${esc(formatDateTime(d.generatedAt))}</span>
     <span>Página <span class="pageNumber"></span> de <span class="totalPages"></span></span>

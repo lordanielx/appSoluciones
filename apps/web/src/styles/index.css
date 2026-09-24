@@ -2,7 +2,6 @@
 @import '@fontsource/ibm-plex-sans/latin-500.css';
 @import '@fontsource/ibm-plex-sans/latin-600.css';
 @import '@fontsource/ibm-plex-sans/latin-700.css';
-@import '@fontsource/ibm-plex-mono/latin-500.css';
 @import './tokens.css';
 
 @tailwind base;
@@ -16,7 +15,7 @@
   }
   body {
     @apply bg-bg font-sans text-base text-text antialiased;
-    font-feature-settings: 'tnum' 0;
+    font-variant-numeric: normal;
   }
   :focus-visible {
     outline: none;
@@ -38,8 +37,10 @@
   .label-caps {
     @apply text-2xs font-semibold uppercase tracking-[0.08em] text-text-muted;
   }
+  /* Códigos (OT, informes, equipos): misma fuente, cifras tabulares alineadas. */
   .code {
-    @apply font-mono text-sm font-medium tracking-tight;
+    @apply text-sm font-semibold tracking-normal;
+    font-variant-numeric: tabular-nums;
   }
 }
 

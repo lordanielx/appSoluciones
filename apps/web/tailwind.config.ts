@@ -11,9 +11,9 @@ export default {
   theme: {
     screens: { sm: '480px', md: '768px', lg: '1024px', xl: '1280px', '2xl': '1440px' },
     borderRadius: { none: '0', sm: 'var(--radius-sm)', DEFAULT: 'var(--radius-md)', md: 'var(--radius-md)', lg: 'var(--radius-lg)' },
+    // Una sola familia en toda la aplicación: IBM Plex Sans (Google Fonts), también para cifras.
     fontFamily: {
       sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
-      mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
     },
     fontSize: {
       '2xs': ['11px', '16px'],

@@ -309,7 +309,7 @@ function ItemEditor({ index: i, total, control, register, errors, readOnly, data
   return (
     <div className="rounded border border-border bg-surface">
       <div className="flex items-center justify-between gap-2 border-b border-border bg-subtle px-3 py-1.5">
-        <span className="font-mono text-sm font-semibold text-graphite">{n}</span>
+        <span className="text-sm font-semibold text-graphite">{n}</span>
         {!readOnly && (
           <div className="flex items-center gap-0.5">
             <IconButton size="sm" label={`Subir actividad ${name}`} disabled={i === 0} onClick={() => onMove(i - 1)}>
@@ -359,7 +359,7 @@ function ItemEditor({ index: i, total, control, register, errors, readOnly, data
               inputMode="numeric"
               min={1}
               max={MAX_PHOTOS_PER_ITEM}
-              className="font-mono"
+              className=""
               {...register(`items.${i}.minPhotos`, { setValueAs: toInt })}
             />
           </FormField>
@@ -371,10 +371,10 @@ function ItemEditor({ index: i, total, control, register, errors, readOnly, data
               <Input placeholder="Ej.: V, A, °C" {...register(`items.${i}.unit`)} />
             </FormField>
             <FormField label="Valor mínimo" error={e?.minValue?.message}>
-              <Input type="number" step="any" inputMode="decimal" className="font-mono" {...register(`items.${i}.minValue`, { setValueAs: toNumberOrNull })} />
+              <Input type="number" step="any" inputMode="decimal" className="" {...register(`items.${i}.minValue`, { setValueAs: toNumberOrNull })} />
             </FormField>
             <FormField label="Valor máximo" error={e?.maxValue?.message}>
-              <Input type="number" step="any" inputMode="decimal" className="font-mono" {...register(`items.${i}.maxValue`, { setValueAs: toNumberOrNull })} />
+              <Input type="number" step="any" inputMode="decimal" className="" {...register(`items.${i}.maxValue`, { setValueAs: toNumberOrNull })} />
             </FormField>
           </div>
         )}
@@ -422,7 +422,7 @@ function OptionsEditor({
       </legend>
       {value.map((opt, j) => (
         <div key={j} className="flex items-center gap-2">
-          <span className="w-6 shrink-0 font-mono text-xs text-text-muted">{String(j + 1).padStart(2, '0')}</span>
+          <span className="w-6 shrink-0 text-xs text-text-muted">{String(j + 1).padStart(2, '0')}</span>
           <Input
             aria-label={`Opción ${j + 1} de la actividad ${itemNumber}`}
             value={opt}
@@ -477,7 +477,7 @@ function TechnicianPreview({ items }: { items: Partial<ItemValues>[] }) {
                     const photos = Math.max(1, Number(item?.minPhotos) || 0);
                     return (
                       <li key={n} className="flex gap-3 border-t border-border px-4 py-2.5 first:border-t-0">
-                        <span className="pt-0.5 font-mono text-xs text-text-muted">{n}</span>
+                        <span className="pt-0.5 text-xs text-text-muted">{n}</span>
                         <div className="min-w-0 flex-1">
                           <p className={cn('break-words text-sm', item?.label?.trim() ? 'text-text' : 'italic text-text-muted')}>
                             {item?.label?.trim() || 'Actividad sin nombre'}

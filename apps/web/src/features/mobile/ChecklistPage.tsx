@@ -98,7 +98,7 @@ export function ChecklistPage() {
           <article className="px-4 py-5">
             {item.section && <p className="label-caps mb-1">{item.section}</p>}
             <div className="flex items-start gap-3">
-              <span className="font-mono text-3xl font-semibold leading-none text-accent">{String(item.order).padStart(2, '0')}</span>
+              <span className="text-3xl font-semibold leading-none text-accent">{String(item.order).padStart(2, '0')}</span>
               <div className="min-w-0">
                 <h2 id={labelId} className="text-xl font-semibold leading-snug">
                   {item.label}

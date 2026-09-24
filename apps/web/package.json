@@ -12,7 +12,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@fontsource/ibm-plex-mono": "^5.2.0",
     "@fontsource/ibm-plex-sans": "^5.2.0",
     "@hookform/resolvers": "^5.2.0",
     "@meca/shared": "workspace:*",

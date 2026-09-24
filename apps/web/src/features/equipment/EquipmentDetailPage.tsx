@@ -134,7 +134,7 @@ export function EquipmentDetailPage() {
                     { label: 'Descripción', value: e.description ? <span className="whitespace-pre-line font-normal">{e.description}</span> : null },
                     {
                       label: 'Especificaciones técnicas',
-                      value: e.specifications ? <span className="block whitespace-pre-line font-mono text-sm font-normal">{e.specifications}</span> : null,
+                      value: e.specifications ? <span className="block whitespace-pre-line text-sm font-normal">{e.specifications}</span> : null,
                     },
                   ]}
                 />

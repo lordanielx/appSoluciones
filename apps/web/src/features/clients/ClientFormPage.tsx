@@ -59,10 +59,10 @@ export function ClientFormPage() {
               </FormField>
               <div className="grid grid-cols-[1fr_72px] gap-2">
                 <FormField label="NIT" required error={err.nit?.message} hint="Sin dígito de verificación">
-                  <Input inputMode="numeric" className="font-mono" {...register('nit')} />
+                  <Input inputMode="numeric" className="" {...register('nit')} />
                 </FormField>
                 <FormField label="DV" error={err.dv?.message}>
-                  <Input inputMode="numeric" maxLength={1} className="font-mono" {...register('dv')} />
+                  <Input inputMode="numeric" maxLength={1} className="" {...register('dv')} />
                 </FormField>
               </div>
             </div>

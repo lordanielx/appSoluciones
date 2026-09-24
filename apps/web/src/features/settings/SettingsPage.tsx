@@ -60,7 +60,7 @@ function ServiceTypeModal({ open, serviceType, onClose }: { open: boolean; servi
     >
       <form id="service-type-form" onSubmit={handleSubmit((d) => save.mutate(d))} noValidate className="grid gap-4 sm:grid-cols-[140px_1fr]">
         <FormField label="Código" required error={err.code?.message} hint="Ej.: MP, MC, INST">
-          <Input className="font-mono uppercase" maxLength={20} autoFocus={!editing} {...register('code')} />
+          <Input className="uppercase" maxLength={20} autoFocus={!editing} {...register('code')} />
         </FormField>
         <FormField label="Nombre" required error={err.name?.message}>
           <Input {...register('name')} placeholder="Ej.: Mantenimiento preventivo" />

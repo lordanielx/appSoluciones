@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { CheckCircle2, Eye, MessageSquareWarning } from 'lucide-react';
+import { Check, CheckCircle2, Eye, MessageSquareWarning, X } from 'lucide-react';
 import { Permission, WORK_ORDER_STATUS_LABELS, WorkOrderStatus, evaluateSubmission, type ChecklistValue } from '@meca/shared';
 import { workOrdersApi } from '@/lib/api/endpoints';
 import { errorMessage } from '@/lib/api/errors';
@@ -88,7 +88,7 @@ export function WorkOrderReviewPage() {
   return (
     <>
       <PageHeader
-        title={<>Revisión <span className="font-mono">{wo.number}</span></>}
+        title={<>Revisión <span className="">{wo.number}</span></>}
         subtitle={`${wo.client.legalName} · ${wo.equipment ? `${wo.equipment.code} ${wo.equipment.name}` : wo.title}`}
         breadcrumb={[{ label: 'Órdenes', to: '/work-orders' }, { label: wo.number, to: `/work-orders/${id}` }, { label: 'Revisión' }]}
         meta={<StatusBadge status={wo.status} size="md" />}
@@ -143,7 +143,7 @@ export function WorkOrderReviewPage() {
               {checks.map((c) => (
                 <li key={c.label} className="flex items-center gap-2 text-sm">
                   <span className={cn('flex h-5 w-5 items-center justify-center border text-xs font-bold', c.ok ? 'border-success bg-success-soft text-success' : 'border-danger bg-danger-soft text-danger')} aria-hidden>
-                    {c.ok ? '✓' : '!'}
+                    {c.ok ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : <X className="h-3.5 w-3.5" strokeWidth={3} />}
                   </span>
                   <span>{c.label}</span>
                   <span className="sr-only">{c.ok ? 'completo' : 'pendiente'}</span>

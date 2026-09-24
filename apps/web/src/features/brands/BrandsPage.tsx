@@ -63,7 +63,7 @@ function ReportHeaderPreview({ name, legalName, nit, logoUrl, primaryColor, seco
             <p className="text-2xs font-semibold uppercase tracking-[0.06em]" style={{ color: primary }}>
               Informe de servicio
             </p>
-            <p className="font-mono text-2xs text-[#44505C]">OT-0000</p>
+            <p className="text-2xs text-[#44505C]">OT-0000</p>
           </div>
         </div>
         <div className="h-1 w-16" style={{ backgroundColor: secondary }} aria-hidden />
@@ -95,7 +95,7 @@ function ColorField({
         className="h-10 w-12 shrink-0 cursor-pointer rounded border border-border-strong bg-surface p-1"
       />
       <FormField label={label} required error={error} hint="Formato #RRGGBB" className="min-w-0 flex-1">
-        <Input className="font-mono uppercase" maxLength={7} {...inputProps} />
+        <Input className="uppercase" maxLength={7} {...inputProps} />
       </FormField>
     </div>
   );
@@ -204,7 +204,7 @@ function BrandFormModal({
             <Input {...register('name')} autoFocus={!editing} />
           </FormField>
           <FormField label="NIT" required error={err.nit?.message} hint="Solo números, sin dígito de verificación">
-            <Input inputMode="numeric" className="font-mono" {...register('nit')} />
+            <Input inputMode="numeric" className="" {...register('nit')} />
           </FormField>
           <FormField label="Razón social" required error={err.legalName?.message} className="md:col-span-2">
             <Input {...register('legalName')} />
