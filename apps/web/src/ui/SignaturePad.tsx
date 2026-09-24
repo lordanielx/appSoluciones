@@ -128,7 +128,7 @@ export const SignaturePad = forwardRef<SignaturePadHandle, { label: string; onCh
 
     return (
       <div className="flex flex-col gap-2">
-        <div className="relative rounded border border-border-strong bg-surface">
+        <div className="relative scroll-mt-40 rounded border border-border-strong bg-surface">
           <canvas
             ref={canvasRef}
             role="img"

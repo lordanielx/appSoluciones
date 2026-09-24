@@ -111,3 +111,24 @@ describe('Autenticación', () => {
     expect(res.headers['x-powered-by']).toBeUndefined();
   });
 });
+
+describe('Rotación con respuesta perdida', () => {
+  let ctx: TestContext;
+  beforeAll(async () => {
+    ctx = await createTestApp();
+  });
+  afterAll(async () => {
+    await ctx.prisma.$disconnect();
+    await ctx.app.close();
+  });
+
+  it('dentro de la ventana de gracia reemite la sesión en lugar de cerrarla', async () => {
+    const user = await createUser(ctx.prisma, 'TECHNICIAN');
+    const loginRes = await ctx.http().post('/api/v1/auth/login').send({ email: user.email, password: PASSWORD }).expect(200);
+    const first = refreshCookie(loginRes.headers['set-cookie']);
+    await ctx.http().post('/api/v1/auth/refresh').set('Cookie', first).set(CSRF).expect(200);
+    // El navegador nunca recibió la cookie nueva y reintenta con la anterior.
+    const retry = await ctx.http().post('/api/v1/auth/refresh').set('Cookie', first).set(CSRF).expect(200);
+    expect(retry.body.accessToken).toBeDefined();
+  });
+});

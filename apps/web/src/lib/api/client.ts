@@ -37,17 +37,12 @@ class ApiClient {
     return this.refreshing;
   }
 
-  private async doRefresh(attempt = 0): Promise<AuthResponse | null> {
+  private async doRefresh(): Promise<AuthResponse | null> {
     let res: Response;
     try {
       res = await fetch(`${API_BASE}/auth/refresh`, { method: 'POST', credentials: 'include', headers: CSRF_HEADERS });
     } catch {
       throw new NetworkError();
-    }
-    if (res.status === 401 && attempt === 0) {
-      // Otra pestaña pudo haber rotado la cookie en este instante: un reintento corto.
-      await new Promise((r) => setTimeout(r, 400));
-      return this.doRefresh(1);
     }
     if (!res.ok) {
       this.setSession(null);

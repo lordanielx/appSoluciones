@@ -25,7 +25,10 @@ import { PasswordService } from './password.service';
 export const MAX_FAILED_LOGINS = 5;
 export const LOCK_MINUTES = 15;
 const RESET_TOKEN_TTL_MINUTES = 60;
-/** Ventana en la que un refresh token recién rotado no se considera reutilización (pestañas concurrentes). */
+/**
+ * Ventana en la que un refresh token recién rotado no se considera reutilización
+ * (pestañas concurrentes o respuesta perdida). Equivale al "reuse interval" de otros proveedores.
+ */
 const ROTATION_GRACE_MS = 20_000;
 
 export interface IssuedSession extends AuthResponse {
@@ -106,8 +109,14 @@ export class AuthService {
     if (session.revokedAt) {
       const recentlyRotated =
         session.replacedById && Date.now() - session.revokedAt.getTime() < ROTATION_GRACE_MS;
+      if (recentlyRotated && session.expiresAt > new Date() && session.user.active) {
+        // La respuesta de la rotación anterior probablemente se perdió (navegación, pestañas
+        // concurrentes): se emite otra sesión de la misma familia en lugar de cerrar la sesión.
+        return this.issueSession(session.user, session.familyId);
+      }
       if (!recentlyRotated) {
-        // Reutilización de un token ya rotado: posible robo. Se revoca toda la familia.
+        // Reutilización de un token ya rotado fuera de la ventana de gracia: posible robo.
+        // Se revoca toda la familia.
         await this.prisma.session.updateMany({
           where: { familyId: session.familyId, revokedAt: null },
           data: { revokedAt: new Date() },
